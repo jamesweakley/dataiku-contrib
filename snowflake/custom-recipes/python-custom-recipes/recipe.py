@@ -72,6 +72,7 @@ out = dataiku.Dataset(DATASET_OUT)
 # INPUT DATASET SETTINGS
 #------------------------------------------------------------------------------
 
+print("[-] Reading input dataset settings (S3 source)")
 # Input dataset settings
 config = ds.get_config()
 
@@ -97,6 +98,7 @@ skip_rows = config["formatParams"]["skipRowsBeforeHeader"]
 # OUTPUT DATASET SETTINGS
 #------------------------------------------------------------------------------
 
+print("[-] Configuring output dataset settings (Snowflake table)")
 # Output configuration
 config = out.get_location_info(sensitive_info=True)
 
@@ -117,7 +119,7 @@ output_table = config["info"]["table"].replace("${projectKey}", project_key)
 #------------------------------------------------------------------------------
 # BULK LOADING TO SNOWFLAKE
 #------------------------------------------------------------------------------
-
+print("[-] Connecting to snowflake")
 cnx = sf.connect(
     user=sf_user,
     password=sf_password,
