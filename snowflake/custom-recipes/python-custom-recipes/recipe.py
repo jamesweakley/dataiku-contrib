@@ -86,6 +86,7 @@ project_key = config["projectKey"]
 bucket = config["params"]["bucket"]
 path = config["params"]["path"].replace("${projectKey}",config["projectKey"])
 full_path = "s3://{}{}".format(bucket, path)
+print("[-] Full path of input file: {}".format(full_path))
 
 # Input file definition
 separator = config["formatParams"]["separator"]
