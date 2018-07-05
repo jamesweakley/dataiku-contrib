@@ -83,8 +83,8 @@ if config["formatType"] != 'csv':
     sys.exit("Format error (CSV needed)")
 
 
-print("[-] recipe resources:")
-print(get_recipe_resource())
+print("[-] source dataset location_info:")
+print(ds.get_location_info())
 
 project_key = config["projectKey"]
 print("[-] Building S3 file path")
