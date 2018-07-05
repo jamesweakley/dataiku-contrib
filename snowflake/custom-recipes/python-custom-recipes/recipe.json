@@ -57,7 +57,7 @@
         {
            "name" : "snowflake_on_error",
            "label" : "Snowflake ON_ERROR",
-           "description" : "How snowflake should treat load errors, as per https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html#copy-options",
+           "description" : "How snowflake should treat load errors, as per <a href='https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html#copy-options'>copy-options</a>",
            "type" : "SELECT",
            "selectChoices": [
                {
