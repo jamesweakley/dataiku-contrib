@@ -82,7 +82,7 @@ if config["formatType"] != 'csv':
     sys.exit("Format error (CSV needed)")
 
 project_key = config["projectKey"]
-
+print("[-] Building S3 file path")
 # Actual path of the input file on S3
 bucket = config["params"]["bucket"]
 path = config["params"]["path"].replace("${projectKey}",config["projectKey"])
