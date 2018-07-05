@@ -81,6 +81,10 @@ if config["formatType"] != 'csv':
     print("[-] Please adjust the format. Aborting")
     sys.exit("Format error (CSV needed)")
 
+print("[-] Source dataset config:")
+for x in config:
+    print (x,":",config[x])
+    
 project_key = config["projectKey"]
 print("[-] Building S3 file path")
 # Actual path of the input file on S3
