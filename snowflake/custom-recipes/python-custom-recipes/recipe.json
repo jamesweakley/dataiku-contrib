@@ -36,7 +36,7 @@
     "params": [
         {
             "name" : "aws_use_environment_credentials",
-            "label" : "Environment credentials"
+            "label" : "Environment credentials",
             "description" : "Use AWS session credentials from environment",
             "type" : "BOOLEAN"
         },
@@ -47,8 +47,7 @@
             "description":"Leave empty if it is defined as a project variable",
             "mandatory" : false
         },
-    
-           {
+        {
             "name": "aws_secret_key",
             "label" : "AWS Secret Key",
             "type": "PASSWORD",
@@ -56,10 +55,10 @@
             "mandatory" : false
         },
         {
-           "name": "snowflake_on_error",
-           "label": "Snowflake ON_ERROR",
-           "description":"How snowflake should treat load errors, as per https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html#copy-options",
-           "type": "SELECT",
+           "name" : "snowflake_on_error",
+           "label" : "Snowflake ON_ERROR",
+           "description" : "How snowflake should treat load errors, as per https://docs.snowflake.net/manuals/sql-reference/sql/copy-into-table.html#copy-options",
+           "type" : "SELECT",
            "selectChoices": [
                {
                    "value": "CONTINUE",
