@@ -71,8 +71,6 @@ out = dataiku.Dataset(DATASET_OUT)
 #------------------------------------------------------------------------------
 # INPUT DATASET SETTINGS
 #------------------------------------------------------------------------------
-
-
 print("[-] Reading input dataset settings (S3 source)")
 # Input dataset settings
 config = ds.get_config()
@@ -82,17 +80,17 @@ if config["formatType"] != 'csv':
     print("[-] Please adjust the format. Aborting")
     sys.exit("Format error (CSV needed)")
 
-
-print("[-] source dataset read_metadata:")
-print(ds.read_metadata())
-
 project_key = config["projectKey"]
-print("[-] Building S3 file path")
+if not config["params"]["bucket"]:
+    print("[-] S3 bucket name must be defined in the dataset, and not at the connection level. Please remove the bucket name specification at the connection level and specify it on the data source.")
+    sys.exit("Configuration error")
+
 # Actual path of the input file on S3
+print("[-] Building S3 file path")
 bucket = config["params"]["bucket"]
 path = config["params"]["path"].replace("${projectKey}",config["projectKey"])
 full_path = "s3://{}{}".format(bucket, path)
-print("[-] Full path of input file: {}".format(full_path))
+print("[-] Full path of input to provide to Snowflake stage: {}".format(full_path))
 
 # Input file definition
 separator = config["formatParams"]["separator"]
@@ -179,7 +177,7 @@ if AWS_USE_ENVIRONMENT_CREDENTIALS is True:
     q = """CREATE OR REPLACE STAGE dss_stage
            FILE_FORMAT = dss_ff
            URL = '{}'
-           CREDENTIALS = (AWS_KEY_ID = '{}' AWS_SECRET_KEY = '{}' AWS_TOKEN = {})""".format(full_path, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_TOKEN)
+           CREDENTIALS = (AWS_KEY_ID = '{}' AWS_SECRET_KEY = '{}' AWS_TOKEN = '{}'')""".format(full_path, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_TOKEN)
 else:
     q = """CREATE OR REPLACE STAGE dss_stage
            FILE_FORMAT = dss_ff
