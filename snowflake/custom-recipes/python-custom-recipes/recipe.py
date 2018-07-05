@@ -14,6 +14,8 @@ DATASET_OUT    = get_output_names_for_role("output_dataset")[0]
 AWS_USE_ENVIRONMENT_CREDENTIALS = get_recipe_config().get("aws_use_environment_credentials")
 AWS_ACCESS_KEY = get_recipe_config().get("aws_access_key")
 AWS_SECRET_KEY = get_recipe_config().get("aws_secret_key")
+SNOWFLAKE_ON_ERROR = get_recipe_config().get("snowflake_on_error")
+
 
 if AWS_USE_ENVIRONMENT_CREDENTIALS is True:
     print("[-] Using AWS environment credentials")
@@ -62,6 +64,11 @@ else:
                 print("[-] Please check and correct your Global Variables.")
                 sys.exit("Global Variables error")
         
+if not SNOWFLAKE_ON_ERROR:
+    print("[-] No value found for the snowflake_on_error parameter, this should have been supplied as mandatory.")
+    sys.exit("Project parameters error")
+else:
+    print("[-] Using SNOWFLAKE_ON_ERROR value {}".format(SNOWFLAKE_ON_ERROR))
 
 # Dataiku Datasets
 ds = dataiku.Dataset(DATASET_IN)
@@ -188,7 +195,7 @@ cur.execute(q)
 
 print("[+] Loading data...")
 q = """COPY INTO \"{}\" FROM @dss_stage 
-        ON_ERROR = 'ABORT_STATEMENT' """.format(output_table)
+        ON_ERROR = '{}' """.format(output_table,SNOWFLAKE_ON_ERROR)
 print(q)
 cur.execute(q)
 
