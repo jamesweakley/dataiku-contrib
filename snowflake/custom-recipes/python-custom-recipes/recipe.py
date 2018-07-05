@@ -82,9 +82,6 @@ if config["formatType"] != 'csv':
     print("[-] Please adjust the format. Aborting")
     sys.exit("Format error (CSV needed)")
 
-print("[-] plugin config:")
-for x in get_plugin_config():
-    print (x,":",config[x])
 
 print("[-] recipe resources:")
 for x in get_recipe_resource():
