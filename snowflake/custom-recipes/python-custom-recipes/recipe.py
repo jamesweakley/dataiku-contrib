@@ -84,9 +84,7 @@ if config["formatType"] != 'csv':
 
 
 print("[-] recipe resources:")
-for x in get_recipe_resource():
-    print (x,":",config[x])
-
+print(get_recipe_resource())
 
 project_key = config["projectKey"]
 print("[-] Building S3 file path")
