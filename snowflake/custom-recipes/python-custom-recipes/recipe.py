@@ -11,7 +11,7 @@ from boto3 import Session
 DATASET_IN     = get_input_names_for_role("input_dataset")[0]
 DATASET_OUT    = get_output_names_for_role("output_dataset")[0]
 
-AWS_USE_ENVIRONMENT_CREDENTIALS = get_recipe_config()["aws_use_environment_credentials"]
+AWS_USE_ENVIRONMENT_CREDENTIALS = get_recipe_config().get("aws_use_environment_credentials")
 AWS_ACCESS_KEY = get_recipe_config().get("aws_access_key")
 AWS_SECRET_KEY = get_recipe_config().get("aws_secret_key")
 
