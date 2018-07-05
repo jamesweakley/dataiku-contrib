@@ -16,6 +16,7 @@ AWS_ACCESS_KEY = get_recipe_config().get("aws_access_key")
 AWS_SECRET_KEY = get_recipe_config().get("aws_secret_key")
 
 if AWS_USE_ENVIRONMENT_CREDENTIALS is True:
+    print("[-] Using AWS environment credentials")
     session = Session()
     credentials = session.get_credentials()
     current_credentials = credentials.get_frozen_credentials()
@@ -31,6 +32,7 @@ if AWS_USE_ENVIRONMENT_CREDENTIALS is True:
     if not AWS_TOKEN:
         print("[-] You requested that AWS environment credentials be used for S3 load, but the boto3 library could not find a token in your environment (see https://boto3.readthedocs.io/en/latest/guide/configuration.html)")
         sys.exit("Project Variables error")
+    print("[-] Found AWS environment credentials")
 else:
     if not AWS_ACCESS_KEY or not AWS_SECRET_KEY:
         # Looking up in Project Variables
