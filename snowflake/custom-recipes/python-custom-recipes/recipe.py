@@ -68,7 +68,7 @@ if not SNOWFLAKE_ON_ERROR:
     print("[-] No value found for the snowflake_on_error parameter, this should have been supplied as mandatory.")
     sys.exit("Project parameters error")
 else:
-    print("[-] Using SNOWFLAKE_ON_ERROR value {}".format(SNOWFLAKE_ON_ERROR))
+    print("[-] Using Snowflake ON_ERROR value {}".format(SNOWFLAKE_ON_ERROR))
 
 # Dataiku Datasets
 ds = dataiku.Dataset(DATASET_IN)
