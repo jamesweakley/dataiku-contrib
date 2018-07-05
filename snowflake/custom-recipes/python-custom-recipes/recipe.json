@@ -35,6 +35,11 @@
 
     "params": [
         {
+            "name" : "aws_use_environment_credentials",
+            "label" : "Use AWS session credentials from environment",
+            "type" : "BOOLEAN"
+        },
+        {
             "name": "aws_access_key",
             "label" : "AWS Access Key",
             "type": "STRING",

@@ -5,42 +5,61 @@ import dataiku
 import urllib.parse as urlparse
 import snowflake.connector as sf
 from dataiku.customrecipe import *
+from boto3 import Session
 
 # Settings
 DATASET_IN     = get_input_names_for_role("input_dataset")[0]
 DATASET_OUT    = get_output_names_for_role("output_dataset")[0]
 
+AWS_USE_ENVIRONMENT_CREDENTIALS = get_recipe_config()["aws_use_environment_credentials"]
 AWS_ACCESS_KEY = get_recipe_config().get("aws_access_key")
 AWS_SECRET_KEY = get_recipe_config().get("aws_secret_key")
 
-if not AWS_ACCESS_KEY or not AWS_SECRET_KEY:
-    # Looking up in Project Variables
-    print("[+] AWS Access Key or Secret Key not entered in the Plugin interface. Looking into Project Variables...")    
-    dss = dataiku.api_client()
-    project = dss.get_project(dataiku.default_project_key())
-    variables = project.get_variables()["standard"]
-    if "snowflake" in variables:
-        if "aws_access_key" in variables["snowflake"] and "aws_secret_key" in variables["snowflake"]:
-            print("[+] Found AWS credentials in Project Variables")
-            AWS_ACCESS_KEY = variables["snowflake"]["aws_access_key"]
-            AWS_SECRET_KEY = variables["snowflake"]["aws_secret_key"]
-        else:
-            print("[-] Snowflake key found in Project Variables but can not retrieve aws_access_key and/or aws_secret_key.")
-            print("[-] Please check and correct your Project Variables.")
-            sys.exit("Project Variables error")
-    else:
-        # Looking into Global Variables
-        variables = dss.get_variables()
+if AWS_USE_ENVIRONMENT_CREDENTIALS is True:
+    session = Session()
+    credentials = session.get_credentials()
+    current_credentials = credentials.get_frozen_credentials()
+    AWS_ACCESS_KEY = current_credentials.access_key
+    AWS_SECRET_KEY = current_credentials.secret_key
+    AWS_TOKEN = current_credentials.token
+    if not AWS_ACCESS_KEY:
+        print("[-] You requested that AWS environment credentials be used for S3 load, but the boto3 library could not find an access key in your environment (see https://boto3.readthedocs.io/en/latest/guide/configuration.html)")
+        sys.exit("Project Variables error")
+    if not AWS_SECRET_KEY:
+        print("[-] You requested that AWS environment credentials be used for S3 load, but the boto3 library could not find a secret key in your environment (see https://boto3.readthedocs.io/en/latest/guide/configuration.html)")
+        sys.exit("Project Variables error")
+    if not AWS_TOKEN:
+        print("[-] You requested that AWS environment credentials be used for S3 load, but the boto3 library could not find a token in your environment (see https://boto3.readthedocs.io/en/latest/guide/configuration.html)")
+        sys.exit("Project Variables error")
+else:
+    if not AWS_ACCESS_KEY or not AWS_SECRET_KEY:
+        # Looking up in Project Variables
+        print("[+] AWS Access Key or Secret Key not entered in the Plugin interface. Looking into Project Variables...")    
+        dss = dataiku.api_client()
+        project = dss.get_project(dataiku.default_project_key())
+        variables = project.get_variables()["standard"]
         if "snowflake" in variables:
             if "aws_access_key" in variables["snowflake"] and "aws_secret_key" in variables["snowflake"]:
-                print("[+] Found AWS credentials in Global Variables")
+                print("[+] Found AWS credentials in Project Variables")
                 AWS_ACCESS_KEY = variables["snowflake"]["aws_access_key"]
                 AWS_SECRET_KEY = variables["snowflake"]["aws_secret_key"]
+            else:
+                print("[-] Snowflake key found in Project Variables but can not retrieve aws_access_key and/or aws_secret_key.")
+                print("[-] Please check and correct your Project Variables.")
+                sys.exit("Project Variables error")
         else:
-            print("[-] Snowflake key found in Global Variables but can not retrieve aws_access_key and/or aws_secret_key.")
-            print("[-] Please check and correct your Global Variables.")
-            sys.exit("Global Variables error")
-    
+            # Looking into Global Variables
+            variables = dss.get_variables()
+            if "snowflake" in variables:
+                if "aws_access_key" in variables["snowflake"] and "aws_secret_key" in variables["snowflake"]:
+                    print("[+] Found AWS credentials in Global Variables")
+                    AWS_ACCESS_KEY = variables["snowflake"]["aws_access_key"]
+                    AWS_SECRET_KEY = variables["snowflake"]["aws_secret_key"]
+            else:
+                print("[-] Snowflake key found in Global Variables but can not retrieve aws_access_key and/or aws_secret_key.")
+                print("[-] Please check and correct your Global Variables.")
+                sys.exit("Global Variables error")
+        
 
 # Dataiku Datasets
 ds = dataiku.Dataset(DATASET_IN)
@@ -146,10 +165,16 @@ q = """CREATE OR REPLACE FILE FORMAT dss_ff
 cur.execute(q)
 
 print("[+] Create stage file ...")
-q = """CREATE OR REPLACE STAGE dss_stage
-       FILE_FORMAT = dss_ff
-       URL = '{}'
-       CREDENTIALS = (AWS_KEY_ID = '{}' AWS_SECRET_KEY = '{}')""".format(full_path, AWS_ACCESS_KEY, AWS_SECRET_KEY)
+if AWS_USE_ENVIRONMENT_CREDENTIALS is True:
+    q = """CREATE OR REPLACE STAGE dss_stage
+           FILE_FORMAT = dss_ff
+           URL = '{}'
+           CREDENTIALS = (AWS_KEY_ID = '{}' AWS_SECRET_KEY = '{}' AWS_TOKEN = {})""".format(full_path, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_TOKEN)
+else:
+    q = """CREATE OR REPLACE STAGE dss_stage
+           FILE_FORMAT = dss_ff
+           URL = '{}'
+           CREDENTIALS = (AWS_KEY_ID = '{}' AWS_SECRET_KEY = '{}')""".format(full_path, AWS_ACCESS_KEY, AWS_SECRET_KEY)
 cur.execute(q)
 
 
