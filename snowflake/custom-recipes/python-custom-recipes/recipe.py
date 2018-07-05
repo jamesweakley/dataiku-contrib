@@ -72,6 +72,7 @@ out = dataiku.Dataset(DATASET_OUT)
 # INPUT DATASET SETTINGS
 #------------------------------------------------------------------------------
 
+
 print("[-] Reading input dataset settings (S3 source)")
 # Input dataset settings
 config = ds.get_config()
@@ -81,10 +82,15 @@ if config["formatType"] != 'csv':
     print("[-] Please adjust the format. Aborting")
     sys.exit("Format error (CSV needed)")
 
-print("[-] Source dataset config:")
-for x in config:
+print("[-] plugin config:")
+for x in get_plugin_config():
     print (x,":",config[x])
-    
+
+print("[-] recipe resources:")
+for x in get_recipe_resource():
+    print (x,":",config[x])
+
+
 project_key = config["projectKey"]
 print("[-] Building S3 file path")
 # Actual path of the input file on S3
