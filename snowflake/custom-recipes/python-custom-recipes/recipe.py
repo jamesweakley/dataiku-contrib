@@ -177,7 +177,7 @@ if AWS_USE_ENVIRONMENT_CREDENTIALS is True:
     q = """CREATE OR REPLACE STAGE dss_stage
            FILE_FORMAT = dss_ff
            URL = '{}'
-           CREDENTIALS = (AWS_KEY_ID = '{}' AWS_SECRET_KEY = '{}' AWS_TOKEN = '{}'')""".format(full_path, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_TOKEN)
+           CREDENTIALS = (AWS_KEY_ID = '{}' AWS_SECRET_KEY = '{}' AWS_TOKEN = '{}')""".format(full_path, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_TOKEN)
 else:
     q = """CREATE OR REPLACE STAGE dss_stage
            FILE_FORMAT = dss_ff
